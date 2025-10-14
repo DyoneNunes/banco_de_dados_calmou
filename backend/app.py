@@ -17,8 +17,6 @@ def put_usuario(id):
 app = Flask(__name__)
 
 
-# 2. AGORA, todos os endpoints (rotas) podem ser definidos
-# --- Endpoint para Listar Todos os Usuários ---
 @app.route('/usuarios', methods=['GET'])
 def get_usuarios():
     usuarios = controller_usuario.listar_usuarios()
