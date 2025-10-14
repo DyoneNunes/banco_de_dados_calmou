@@ -13,14 +13,17 @@ def conectar():
             port="5432",
             database="calmou"
         )
-        print("Conexão ao PostgreSQL bem-sucedida!")
         return conexao
     except (Exception, Error) as error:
+        # Este print de erro é importante e deve ficar
         print(f"Erro ao conectar ao PostgreSQL: {error}")
         return None
 
+# Bloco de teste para este arquivo
 if __name__ == '__main__':
     conn = conectar()
     if conn:
+        print("Teste de conexão direta bem-sucedido!")
         conn.close()
-        print("Conexão ao PostgreSQL foi fechada.")
+    else:
+        print("Teste de conexão direta falhou.")

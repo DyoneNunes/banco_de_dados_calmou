@@ -4,25 +4,24 @@ from model.usuario import Usuario
 
 # --- FUNÇÕES DE HASH DE SENHA ---
 def gerar_hash(senha):
-    """Gera um hash seguro para a senha e retorna como string."""
+    """Gera um hash seguro para a senha."""
     salt = bcrypt.gensalt()
-    hashed_bytes = bcrypt.hashpw(senha.encode('utf-8'), salt)
-    return hashed_bytes.decode('utf-8')
+    return bcrypt.hashpw(senha.encode('utf-8'), salt)
 
 def verificar_senha(senha_plana, hash_armazenado):
     """Verifica se a senha plana corresponde ao hash armazenado."""
-    # Ambos os argumentos DEVEM ser codificados para bytes para o bcrypt.checkpw
+    # O hash do banco vem como string, precisamos converter para bytes
     return bcrypt.checkpw(senha_plana.encode('utf-8'), hash_armazenado.encode('utf-8'))
 
 
-# --- FUNÇÃO CREATE ---
+# --- FUNÇÃO CREATE (MODIFICADA) ---
 def inserir_usuario(usuario):
     try:
         conn = conectar()
         cursor = conn.cursor()
-        senha_hash_str = gerar_hash(usuario.senha_hash)
+        senha_hash = gerar_hash(usuario.senha_hash)
         sql = "INSERT INTO usuarios (nome, email, senha_hash, config) VALUES (%s, %s, %s, %s)"
-        cursor.execute(sql, (usuario.nome, usuario.email, senha_hash_str, usuario.config))
+        cursor.execute(sql, (usuario.nome, usuario.email, senha_hash, usuario.config))
         conn.commit()
     except Exception as error:
         if conn:
@@ -43,7 +42,7 @@ def listar_usuarios():
         cursor.execute(sql)
         resultados = cursor.fetchall()
         for linha in resultados:
-            usuario = Usuario(id=linha[0], nome=linha[1], email=linha[2], senha_hash=linha[3], config=linha[4], data_cadastro=linha[5])
+            usuario = Usuario(id=linha[0], nome=linha[1], email=linha[2], senha_hash=str(linha[3]), config=linha[4], data_cadastro=linha[5])
             usuarios_lista.append(usuario)
         return usuarios_lista
     except Exception as error:
@@ -62,8 +61,7 @@ def buscar_usuario_por_email(email):
         cursor.execute(sql, (email,))
         linha = cursor.fetchone()
         if linha:
-            # O hash é lido do banco como uma string, o que está correto
-            return Usuario(id=linha[0], nome=linha[1], email=linha[2], senha_hash=linha[3], config=linha[4], data_cadastro=linha[5])
+            return Usuario(id=linha[0], nome=linha[1], email=linha[2], senha_hash=str(linha[3]), config=linha[4], data_cadastro=linha[5])
         return None
     except Exception as error:
         print(f"Erro ao buscar usuário por email: {error}")
@@ -81,10 +79,10 @@ def buscar_usuario_por_id(id):
         cursor.execute(sql, (id,))
         linha = cursor.fetchone()
         if linha:
-            return Usuario(id=linha[0], nome=linha[1], email=linha[2], senha_hash=linha[3], config=linha[4], data_cadastro=linha[5])
+            return Usuario(id=linha[0], nome=linha[1], email=linha[2], senha_hash=str(linha[3]), config=linha[4], data_cadastro=linha[5])
         return None
     except Exception as error:
-        print(f"Erro ao buscar usuário por id: {error}")
+        print(f"Erro ao buscar usuário: {error}")
         return None
     finally:
         if conn:
@@ -96,6 +94,7 @@ def atualizar_usuario(usuario):
     try:
         conn = conectar()
         cursor = conn.cursor()
+        # Lógica para decidir se a senha deve ser atualizada
         if usuario.senha_hash and usuario.senha_hash != 'senha_nao_alterada':
             senha_hash = gerar_hash(usuario.senha_hash)
             sql = "UPDATE usuarios SET nome = %s, email = %s, senha_hash = %s, config = %s WHERE id = %s"
