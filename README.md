@@ -69,13 +69,6 @@ Siga as instruções abaixo para configurar e executar uma instância do banco d
 └── README.md
 
 
----
-
-## 🧑‍💻 Colaboradores
-
--   **Derek Cobain**
--   **Dyone Andrade**
-
 2. README para a Aplicação .NET
 Este README é para um projeto focado em uma aplicação .NET, sem acoplamento direto com o projeto PostgreSQL.
 
