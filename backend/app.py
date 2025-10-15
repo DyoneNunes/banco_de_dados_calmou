@@ -1,33 +1,38 @@
 from flask import Flask, jsonify, request
 from controller import controller_usuario
+from model.usuario import Usuario  # Importando o modelo para clareza
 
-# 1. A criação do app DEVE VIR PRIMEIRO
+# Criação do app
 app = Flask(__name__)
 
 
-# 2. AGORA, todos os endpoints (rotas) podem ser definidos
 # --- Endpoint de Login ---
 @app.route('/login', methods=['POST'])
 def login():
     dados = request.get_json()
+    if not dados:
+        return jsonify({"mensagem": "Payload JSON inválido"}), 400
+
     email = dados.get('email')
-    senha = dados.get('senha')
+    password = dados.get('password')
 
-    if not email or not senha:
-        return jsonify({"mensagem": "Email e senha são obrigatórios"}), 400
+    if not email or not password:
+        return jsonify({"mensagem": "Email e password são obrigatórios no payload"}), 400
 
-    usuario_encontrado = controller_usuario.buscar_usuario_por_email(email)
+    # Busca o usuário pelo email
+    user_found = controller_usuario.buscar_usuario_por_email(email)
 
-    if not usuario_encontrado:
+    if not user_found:
         return jsonify({"mensagem": "Usuário não encontrado"}), 404
 
-    if controller_usuario.verificar_senha(senha, usuario_encontrado.senha_hash):
+    # ATUALIZADO: Chamando a nova função 'verify_password' e usando o atributo 'password_hash'
+    if controller_usuario.verify_password(password, user_found.password_hash):
         return jsonify({
             "mensagem": "Login bem-sucedido!",
             "usuario": {
-                "id": usuario_encontrado.id,
-                "nome": usuario_encontrado.nome,
-                "email": usuario_encontrado.email
+                "id": user_found.id,
+                "nome": user_found.nome,
+                "email": user_found.email
             }
         })
     else:
@@ -63,27 +68,29 @@ def get_usuario_by_id(id):
 @app.route('/usuarios', methods=['POST'])
 def post_usuario():
     dados = request.get_json()
-    novo_usuario = controller_usuario.Usuario(
+    # ATUALIZADO: Usando 'password_hash' ao criar o objeto Usuario
+    new_user = Usuario(
         id=None,
         nome=dados['nome'],
         email=dados['email'],
-        senha_hash=dados['senha_hash'],
+        password_hash=dados['password'], # O frontend envia 'password'
         config=dados.get('config')
     )
-    controller_usuario.inserir_usuario(novo_usuario)
+    controller_usuario.inserir_usuario(new_user)
     return jsonify({"status": "sucesso", "mensagem": "Usuário criado!"}), 201
 
 @app.route('/usuarios/<int:id>', methods=['PUT'])
 def put_usuario(id):
     dados = request.get_json()
-    usuario_atualizado = controller_usuario.Usuario(
+    # ATUALIZADO: Usando 'password_hash' ao criar o objeto Usuario
+    updated_user = Usuario(
         id=id,
         nome=dados['nome'],
         email=dados['email'],
-        senha_hash=dados.get('senha_hash'), # .get() para ser opcional
+        password_hash=dados.get('password'), # .get() para ser opcional
         config=dados.get('config')
     )
-    controller_usuario.atualizar_usuario(usuario_atualizado)
+    controller_usuario.atualizar_usuario(updated_user)
     return jsonify({"status": "sucesso", "mensagem": "Usuário atualizado!"})
 
 @app.route('/usuarios/<int:id>', methods=['DELETE'])
@@ -92,6 +99,6 @@ def delete_usuario(id):
     return jsonify({"status": "sucesso", "mensagem": "Usuário removido!"})
 
 
-# 3. O bloco para rodar a aplicação vem por último
+# Bloco para rodar a aplicação
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)

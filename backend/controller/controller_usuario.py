@@ -2,36 +2,31 @@ import bcrypt
 from conexao import conectar
 from model.usuario import Usuario
 
-# --- FUNÇÕES DE HASH DE SENHA ---
-def gerar_hash(senha):
+# --- FUNÇÕES DE HASH DE SENHA (RENOMEADAS) ---
+def generate_hash(password):
     """Gera um hash seguro para a senha e retorna como string."""
     salt = bcrypt.gensalt()
-    hashed_bytes = bcrypt.hashpw(senha.encode('utf-8'), salt)
+    hashed_bytes = bcrypt.hashpw(password.encode('utf-8'), salt)
     return hashed_bytes.decode('utf-8')
 
-def verificar_senha(senha_plana, hash_armazenado):
+def verify_password(plain_password, stored_hash):
     """Verifica se a senha plana corresponde ao hash armazenado."""
-    # Ambos os argumentos DEVEM ser codificados para bytes para o bcrypt.checkpw
-    return bcrypt.checkpw(senha_plana.encode('utf-8'), hash_armazenado.encode('utf-8'))
-
+    return bcrypt.checkpw(plain_password.encode('utf-8'), stored_hash.encode('utf-8'))
 
 # --- FUNÇÃO CREATE ---
 def inserir_usuario(usuario):
     try:
         conn = conectar()
         cursor = conn.cursor()
-        senha_hash_str = gerar_hash(usuario.senha_hash)
-        sql = "INSERT INTO usuarios (nome, email, senha_hash, config) VALUES (%s, %s, %s, %s)"
-        cursor.execute(sql, (usuario.nome, usuario.email, senha_hash_str, usuario.config))
+        password_hash_str = generate_hash(usuario.password_hash)
+        sql = "INSERT INTO usuarios (nome, email, password_hash, config) VALUES (%s, %s, %s, %s)"
+        cursor.execute(sql, (usuario.nome, usuario.email, password_hash_str, usuario.config))
         conn.commit()
     except Exception as error:
-        if conn:
-            conn.rollback()
+        if conn: conn.rollback()
         print(f"Erro ao inserir usuário: {error}")
     finally:
-        if conn:
-            cursor.close()
-            conn.close()
+        if conn: cursor.close(); conn.close()
 
 # --- FUNÇÕES READ ---
 def listar_usuarios():
@@ -43,16 +38,14 @@ def listar_usuarios():
         cursor.execute(sql)
         resultados = cursor.fetchall()
         for linha in resultados:
-            usuario = Usuario(id=linha[0], nome=linha[1], email=linha[2], senha_hash=linha[3], config=linha[4], data_cadastro=linha[5])
+            usuario = Usuario(id=linha[0], nome=linha[1], email=linha[2], password_hash=linha[3], config=linha[4], data_cadastro=linha[5])
             usuarios_lista.append(usuario)
         return usuarios_lista
     except Exception as error:
         print(f"Erro ao listar usuários: {error}")
         return None
     finally:
-        if conn:
-            cursor.close()
-            conn.close()
+        if conn: cursor.close(); conn.close()
 
 def buscar_usuario_por_email(email):
     try:
@@ -62,16 +55,13 @@ def buscar_usuario_por_email(email):
         cursor.execute(sql, (email,))
         linha = cursor.fetchone()
         if linha:
-            # O hash é lido do banco como uma string, o que está correto
-            return Usuario(id=linha[0], nome=linha[1], email=linha[2], senha_hash=linha[3], config=linha[4], data_cadastro=linha[5])
+            return Usuario(id=linha[0], nome=linha[1], email=linha[2], password_hash=linha[3], config=linha[4], data_cadastro=linha[5])
         return None
     except Exception as error:
         print(f"Erro ao buscar usuário por email: {error}")
         return None
     finally:
-        if conn:
-            cursor.close()
-            conn.close()
+        if conn: cursor.close(); conn.close()
 
 def buscar_usuario_por_id(id):
     try:
@@ -81,25 +71,23 @@ def buscar_usuario_por_id(id):
         cursor.execute(sql, (id,))
         linha = cursor.fetchone()
         if linha:
-            return Usuario(id=linha[0], nome=linha[1], email=linha[2], senha_hash=linha[3], config=linha[4], data_cadastro=linha[5])
+            return Usuario(id=linha[0], nome=linha[1], email=linha[2], password_hash=linha[3], config=linha[4], data_cadastro=linha[5])
         return None
     except Exception as error:
         print(f"Erro ao buscar usuário por id: {error}")
         return None
     finally:
-        if conn:
-            cursor.close()
-            conn.close()
+        if conn: cursor.close(); conn.close()
 
 # --- FUNÇÃO UPDATE ---
 def atualizar_usuario(usuario):
     try:
         conn = conectar()
         cursor = conn.cursor()
-        if usuario.senha_hash and usuario.senha_hash != 'senha_nao_alterada':
-            senha_hash = gerar_hash(usuario.senha_hash)
-            sql = "UPDATE usuarios SET nome = %s, email = %s, senha_hash = %s, config = %s WHERE id = %s"
-            params = (usuario.nome, usuario.email, senha_hash, usuario.config, usuario.id)
+        if usuario.password_hash and usuario.password_hash != 'password_not_changed':
+            password_hash = generate_hash(usuario.password_hash)
+            sql = "UPDATE usuarios SET nome = %s, email = %s, password_hash = %s, config = %s WHERE id = %s"
+            params = (usuario.nome, usuario.email, password_hash, usuario.config, usuario.id)
         else:
             sql = "UPDATE usuarios SET nome = %s, email = %s, config = %s WHERE id = %s"
             params = (usuario.nome, usuario.email, usuario.config, usuario.id)

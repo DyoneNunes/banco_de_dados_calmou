@@ -1,15 +1,15 @@
-// app/(tabs)/perfil.tsx
-
-import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useAuth } from '../../src/context/AuthContext'; // 1. IMPORTE O useAuth
 
 export default function PerfilScreen() {
-  // Dados de mentira para o perfil. O Dyone do futuro conecta isso.
+  const { signOut } = useAuth(); // 2. PEGUE A FUNÇÃO signOut
+
   const usuario = {
     nome: "Dyone Nunes",
     email: "dyone.nunes@calmou.app",
-    avatarUrl: "https://github.com/DyoneNunes.png", // Usando o avatar do GitHub como exemplo
+    avatarUrl: "https://github.com/DyoneNunes.png",
   };
 
   return (
@@ -21,30 +21,24 @@ export default function PerfilScreen() {
       </View>
 
       <View style={styles.menu}>
+        {/* Itens do Menu */}
         <TouchableOpacity style={styles.menuItem}>
           <Ionicons name="person-outline" size={24} color="#333" />
           <Text style={styles.menuItemText}>Editar Perfil</Text>
           <Ionicons name="chevron-forward-outline" size={24} color="gray" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem}>
-          <Ionicons name="notifications-outline" size={24} color="#333" />
-          <Text style={styles.menuItemText}>Notificações</Text>
-          <Ionicons name="chevron-forward-outline" size={24} color="gray" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem}>
-          <Ionicons name="lock-closed-outline" size={24} color="#333" />
-          <Text style={styles.menuItemText}>Segurança</Text>
-          <Ionicons name="chevron-forward-outline" size={24} color="gray" />
-        </TouchableOpacity>
+        {/* ... outros itens ... */}
       </View>
 
-      <TouchableOpacity style={styles.logoutButton}>
+      {/* 3. ADICIONE O onPress NO BOTÃO DE LOGOUT */}
+      <TouchableOpacity style={styles.logoutButton} onPress={signOut}>
         <Text style={styles.logoutButtonText}>Sair</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
 }
 
+// (Seus estilos continuam os mesmos)
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f5f5f5' },
   header: { alignItems: 'center', marginTop: 60, paddingHorizontal: 20 },
@@ -61,11 +55,8 @@ const styles = StyleSheet.create({
     borderRadius: 10, 
     marginBottom: 10,
     elevation: 2,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 5,
   },
-  menuItemText: { fontSize: 18, marginLeft: 15, flex: 1 }, // flex: 1 empurra a seta para a direita
+  menuItemText: { fontSize: 18, marginLeft: 15, flex: 1 },
   logoutButton: { margin: 20, backgroundColor: '#FF634720', padding: 15, borderRadius: 10, alignItems: 'center' },
   logoutButtonText: { color: '#FF6347', fontSize: 18, fontWeight: 'bold' },
 });
