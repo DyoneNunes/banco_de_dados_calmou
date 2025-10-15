@@ -1,10 +1,11 @@
+// app/(tabs)/_layout.tsx
+
 import { Tabs } from 'expo-router';
 import React from 'react';
 
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { TabBarIcon } from '../../components/navigation/TabBarIcon';
+import { Colors } from '../../constants/theme';
+import { useColorScheme } from '../../hooks/use-color-scheme';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -14,22 +15,31 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
-        tabBarButton: HapticTab,
       }}>
       <Tabs.Screen
         name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
-        }}
+        options={{ title: 'Início', tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} /> }}
       />
       <Tabs.Screen
-        name="explore"
+        name="meditacoes"
+        options={{ title: 'Meditar', tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? 'leaf' : 'leaf-outline'} color={color} /> }}
+      />
+      <Tabs.Screen
+        name="avaliacoes"
+        options={{ title: 'Avaliações', tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? 'clipboard' : 'clipboard-outline'} color={color} /> }}
+      />
+
+      {/* ===== ABA "EXPLORE" TROCADA PELA "PERFIL" ===== */}
+      <Tabs.Screen
+        name="perfil" // Nome do novo arquivo que vamos criar
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: 'Perfil',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'person' : 'person-outline'} color={color} />
+          ),
         }}
       />
+      {/* ============================================== */}
     </Tabs>
   );
 }
