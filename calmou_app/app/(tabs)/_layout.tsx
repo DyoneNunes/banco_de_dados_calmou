@@ -31,11 +31,11 @@ export default function TabLayout() {
 
       {/* ===== ABA "EXPLORE" TROCADA PELA "PERFIL" ===== */}
       <Tabs.Screen
-        name="perfil" // Nome do novo arquivo que vamos criar
+        name="historico" // Nome do arquivo que acabamos de renomear
         options={{
-          title: 'Perfil',
+          title: 'Histórico',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'person' : 'person-outline'} color={color} />
+            <TabBarIcon name={focused ? 'archive' : 'archive-outline'} color={color} />
           ),
         }}
       />

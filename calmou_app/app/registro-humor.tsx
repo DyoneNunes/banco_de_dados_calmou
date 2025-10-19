@@ -1,12 +1,13 @@
-// app/registro-humor.tsx
-
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, TextInput, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import LottieView from 'lottie-react-native';
+import React, { useState } from 'react';
+import { Alert, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-// ===== CAMINHO CORRIGIDO AQUI (../ em vez de ../../) =====
+// Importando o hook de autenticação e o serviço de API
+import { useAuth } from '../src/context/AuthContext';
+import api from '../src/services/api';
+
 const HUMOR_OPTIONS = [
   { level: 1, animation: require('../assets/animations/stressed.json'), label: 'Estressado' },
   { level: 2, animation: require('../assets/animations/sad.json'), label: 'Mal' },
@@ -14,23 +15,45 @@ const HUMOR_OPTIONS = [
   { level: 4, animation: require('../assets/animations/happy.json'), label: 'Bem' },
   { level: 5, animation: require('../assets/animations/very-happy.json'), label: 'Ótimo' },
 ];
-// =======================================================
 
 export default function RegistroHumorScreen() {
-  // (O resto do código continua o mesmo, não precisa mudar nada)
   const router = useRouter();
+  const { authState } = useAuth(); // Pega o estado de autenticação
   const [humorSelecionado, setHumorSelecionado] = useState<number | null>(null);
   const [notas, setNotas] = useState('');
 
+  // --- FUNÇÃO DE SALVAR ATUALIZADA PARA USAR A API ---
   const handleSalvar = () => {
     if (humorSelecionado === null) {
       Alert.alert("Atenção", "Por favor, selecione como você está se sentindo.");
       return;
     }
-    console.log({ humor: humorSelecionado, notas });
-    Alert.alert("Salvo!", "Seu humor foi registrado com sucesso.", [
-        { text: "OK", onPress: () => router.back() }
-    ]);
+    
+    const usuarioId = authState.user?.id;
+    if (!usuarioId) {
+        Alert.alert("Erro", "Usuário não autenticado. Por favor, faça o login novamente.");
+        return;
+    }
+
+    const humorLabel = HUMOR_OPTIONS.find(opt => opt.level === humorSelecionado)?.label;
+
+    const dadosHumor = {
+        usuario_id: usuarioId,
+        nivel_humor: humorSelecionado,
+        sentimento_principal: humorLabel,
+        notas: notas
+    };
+
+    api.post('/humor', dadosHumor)
+      .then(response => {
+        Alert.alert("Salvo!", "Seu humor foi registrado com sucesso.", [
+            { text: "OK", onPress: () => router.back() }
+        ]);
+      })
+      .catch(error => {
+        console.error("Erro ao salvar humor:", error.response?.data);
+        Alert.alert("Erro", "Não foi possível salvar seu registro de humor.");
+      });
   };
 
   return (
@@ -78,7 +101,6 @@ export default function RegistroHumorScreen() {
   );
 }
 
-// (Os estilos são os mesmos)
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#f5f5f5', padding: 20, paddingTop: 60 },
     backButton: { position: 'absolute', top: 50, left: 20, zIndex: 1, },

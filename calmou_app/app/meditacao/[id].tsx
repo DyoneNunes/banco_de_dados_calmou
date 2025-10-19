@@ -1,63 +1,136 @@
-// app/meditacao/[id].tsx
-
-import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, Image, TouchableOpacity, ScrollView } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { Audio, AVPlaybackStatus } from 'expo-av';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import api from '../../src/services/api';
 
-const MOCK_MEDITACOES = [
-    { id: 1, titulo: 'Respiração para Foco', categoria: 'Respiração', duracao_minutos: 5, imagem_capa: 'https://images.pexels.com/photos/3998365/pexels-photo-3998365.png' },
-    { id: 2, titulo: 'Meditação para Dormir', categoria: 'Sono', duracao_minutos: 15, imagem_capa: 'https://images.pexels.com/photos/7194915/pexels-photo-7194915.jpeg' },
-    { id: 3, titulo: 'Atenção Plena para Iniciantes', categoria: 'Mindfulness', duracao_minutos: 10, imagem_capa: 'https://images.pexels.com/photos/3094215/pexels-photo-3094215.jpeg' },
-    { id: 4, titulo: 'Relaxamento Profundo', categoria: 'Relaxamento', duracao_minutos: 20, imagem_capa: 'https://images.pexels.com/photos/1051838/pexels-photo-1051838.jpeg' },
-];
+type Meditacao = {
+  id: number;
+  titulo: string;
+  descricao: string;
+  categoria: string;
+  duracao_minutos: number;
+  imagem_capa: string;
+  url_audio: string;
+};
+
+// Função para formatar o tempo de segundos para MM:SS
+const formatTime = (millis: number) => {
+  if (!millis) return '00:00';
+  const totalSeconds = Math.floor(millis / 1000);
+  const seconds = totalSeconds % 60;
+  const minutes = Math.floor(totalSeconds / 60);
+  return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+};
 
 export default function MeditacaoDetalheScreen() {
-    const { id } = useLocalSearchParams(); // Pega o 'id' da URL
+    const { id } = useLocalSearchParams();
     const router = useRouter();
 
-    const meditacao = MOCK_MEDITACOES.find(m => m.id.toString() === id);
+    const [meditacao, setMeditacao] = useState<Meditacao | null>(null);
+    const [sound, setSound] = useState<Audio.Sound | null>(null);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [playbackStatus, setPlaybackStatus] = useState<AVPlaybackStatus | null>(null);
 
-    if (!meditacao) {
-        return (
-            <SafeAreaView style={styles.container}><Text>Meditação não encontrada</Text></SafeAreaView>
-        );
+    useEffect(() => {
+        if (id) {
+            api.get(`/meditacoes/${id}`)
+                .then(response => {
+                    // Console.log adicionado para debug
+                    console.log("Dados recebidos na tela do player:", JSON.stringify(response.data, null, 2));
+                    setMeditacao(response.data);
+                })
+                .catch(err => {
+                    console.error("Erro ao buscar detalhes da meditação:", err);
+                })
+                .finally(() => setLoading(false));
+        }
+    }, [id]);
+
+    const playPauseSound = async () => {
+        if (!meditacao?.url_audio) return;
+        if (sound) {
+            isPlaying ? await sound.pauseAsync() : await sound.playAsync();
+        } else {
+            try {
+                await Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
+                const { sound: newSound } = await Audio.Sound.createAsync(
+                    { uri: meditacao.url_audio },
+                    { shouldPlay: true },
+                    (status) => setPlaybackStatus(status)
+                );
+                setSound(newSound);
+            } catch (error) {
+                console.error("Erro ao carregar áudio:", error);
+            }
+        }
+    };
+
+    useEffect(() => {
+        if (playbackStatus?.isLoaded) {
+            setIsPlaying(playbackStatus.isPlaying);
+        }
+    }, [playbackStatus]);
+
+    useEffect(() => {
+        return sound ? () => { sound.unloadAsync(); } : undefined;
+    }, [sound]);
+
+    if (loading) {
+        return <ActivityIndicator size="large" style={styles.container} />;
     }
+    if (!meditacao) {
+        return <View style={styles.container}><Text>Meditação não encontrada</Text></View>;
+    }
+
+    const progress = playbackStatus?.isLoaded && playbackStatus.durationMillis
+        ? (playbackStatus.positionMillis / playbackStatus.durationMillis) * 100
+        : 0;
 
     return (
         <View style={styles.container}>
-            <ScrollView>
-                <Image source={{ uri: meditacao.imagem_capa }} style={styles.headerImage} />
-
-                <View style={styles.content}>
-                    <Text style={styles.title}>{meditacao.titulo}</Text>
-                    <Text style={styles.subtitle}>{meditacao.categoria} • {meditacao.duracao_minutos} min</Text>
-                    <Text style={styles.description}>
-                        Relaxe e encontre a calma com esta sessão guiada. Prepare-se para uma jornada de autoconhecimento e paz interior. Feche os olhos, respire fundo e permita-se estar presente no momento.
-                        {"\n\n"}
-                        Esta prática é ideal para reduzir o estresse e a ansiedade, melhorando sua concentração e bem-estar geral.
-                    </Text>
-                </View>
-            </ScrollView>
+            <Image source={{ uri: meditacao.imagem_capa }} style={styles.headerImage} blurRadius={20} />
+            <View style={styles.overlay} />
 
             <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
                 <Ionicons name="arrow-back" size={24} color="white" />
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.playButton}>
-                <Ionicons name="play" size={32} color="white" />
-            </TouchableOpacity>
+            <View style={styles.content}>
+                <Text style={styles.title}>{meditacao.titulo}</Text>
+                <Text style={styles.description}>{meditacao.descricao}</Text>
+
+                <View style={styles.playerContainer}>
+                    <TouchableOpacity style={styles.playButton} onPress={playPauseSound}>
+                        <Ionicons name={isPlaying ? 'pause' : 'play'} size={48} color="#004d40" />
+                    </TouchableOpacity>
+                    <View style={styles.progressContainer}>
+                        <Text style={styles.timeText}>{formatTime(playbackStatus?.isLoaded ? playbackStatus.positionMillis ?? 0 : 0)}</Text>
+                        <View style={styles.progressBarBackground}>
+                            <View style={[styles.progressBarForeground, { width: `${progress}%` }]} />
+                        </View>
+                        <Text style={styles.timeText}>{formatTime(playbackStatus?.isLoaded ? playbackStatus.durationMillis ?? 0 : 0)}</Text>
+                    </View>
+                </View>
+            </View>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#f5f5f5' },
-    headerImage: { width: '100%', height: 300, },
-    backButton: { position: 'absolute', top: 50, left: 20, backgroundColor: 'rgba(0, 0, 0, 0.5)', padding: 8, borderRadius: 20, },
-    content: { padding: 20, marginTop: -30, backgroundColor: '#f5f5f5', borderTopLeftRadius: 30, borderTopRightRadius: 30, },
-    title: { fontSize: 28, fontWeight: 'bold', marginBottom: 8, },
-    subtitle: { fontSize: 16, color: 'gray', marginBottom: 20, },
-    description: { fontSize: 16, lineHeight: 24, color: '#333', },
-    playButton: { position: 'absolute', bottom: 40, right: 30, backgroundColor: '#0a7ea4', width: 70, height: 70, borderRadius: 35, justifyContent: 'center', alignItems: 'center', elevation: 8, shadowColor: '#000', shadowOpacity: 0.3, shadowRadius: 8, },
+    container: { flex: 1, backgroundColor: '#004d40', justifyContent: 'center' },
+    headerImage: { width: '100%', height: '100%', position: 'absolute' },
+    overlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0, 77, 64, 0.7)' },
+    backButton: { position: 'absolute', top: 60, left: 20, zIndex: 10 },
+    content: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 },
+    title: { fontSize: 32, fontWeight: 'bold', color: 'white', textAlign: 'center', marginBottom: 16 },
+    description: { fontSize: 18, color: '#B2DFDB', textAlign: 'center', lineHeight: 26 },
+    playerContainer: { position: 'absolute', bottom: 60, left: 20, right: 20 },
+    playButton: { backgroundColor: 'white', width: 80, height: 80, borderRadius: 40, justifyContent: 'center', alignItems: 'center', alignSelf: 'center', marginBottom: 30, elevation: 10, shadowColor: '#000', shadowOpacity: 0.3, shadowRadius: 10, },
+    progressContainer: { flexDirection: 'row', alignItems: 'center' },
+    timeText: { color: '#B2DFDB', width: 50, textAlign: 'center' },
+    progressBarBackground: { flex: 1, height: 6, backgroundColor: 'rgba(255, 255, 255, 0.3)', borderRadius: 3, marginHorizontal: 10, },
+    progressBarForeground: { height: '100%', backgroundColor: 'white', borderRadius: 3, },
 });
