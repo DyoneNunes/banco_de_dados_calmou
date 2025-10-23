@@ -4,11 +4,12 @@ class Usuario:
     def __init__(self, id=None, nome=None, email=None, password_hash=None, 
                  config=None, data_cadastro=None, cpf=None, 
                  data_nascimento=None, tipo_sanguineo=None, alergias=None,
-                 foto_perfil=None):
+                 foto_perfil=None, password=None):
         self.id = id
         self.nome = nome
         self.email = email
         self.password_hash = password_hash
+        self.password = password  # Atributo para a senha em texto plano
         self.config = config
         self.data_cadastro = data_cadastro
         self.cpf = cpf
