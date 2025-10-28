@@ -4,6 +4,7 @@ from model.usuario import Usuario
 from model.classificacao_humor import ClassificacaoHumor
 from model.meditacao import Meditacao
 from model.resultado_avaliacao import ResultadoAvaliacao
+from model.historico_meditacao import HistoricoMeditacao
 
 
 # --- FUNÇÕES DE HASH DE SENHA ---
@@ -36,7 +37,7 @@ def inserir_usuario(usuario):
             raise ValueError("Senha é obrigatória para criar usuário")
         
         password_hash_str = generate_hash(usuario.password)
-        sql = "INSERT INTO usuarios (nome, email, nomedatabelasenha, config) VALUES (%s, %s, %s, %s)"
+        sql = "INSERT INTO usuarios (nome, email, password_hash, config) VALUES (%s, %s, %s, %s)"
         cursor.execute(sql, (usuario.nome, usuario.email, password_hash_str, usuario.config))
         conn.commit()
         print(f"✅ Usuário {usuario.nome} inserido com sucesso!")
@@ -413,6 +414,274 @@ def buscar_meditacao_por_id(id):
     except Exception as error:
         print(f"❌ Erro ao buscar meditação: {error}")
         return None
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+def inserir_meditacao(meditacao):
+    """Insere uma nova meditação no catálogo."""
+    conn = None
+    cursor = None
+    try:
+        conn = conectar()
+        if not conn:
+            raise Exception("Falha ao conectar ao banco de dados")
+        
+        cursor = conn.cursor()
+        sql = """
+            INSERT INTO meditacoes 
+            (titulo, descricao, duracao_minutos, url_audio, tipo, categoria, imagem_capa) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """
+        
+        cursor.execute(sql, (
+            meditacao.titulo,
+            meditacao.descricao,
+            meditacao.duracao_minutos,
+            meditacao.url_audio,
+            meditacao.tipo,
+            meditacao.categoria,
+            meditacao.imagem_capa
+        ))
+        
+        conn.commit()
+        print(f"✅ Meditação '{meditacao.titulo}' inserida com sucesso!")
+        return True
+
+    except Exception as error:
+        if conn:
+            conn.rollback()
+        print(f"❌ Erro ao inserir meditação: {error}")
+        return False
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+
+# --- FUNÇÕES DE HISTÓRICO DE MEDITAÇÕES ---
+
+def registrar_meditacao_concluida(historico):
+    """Registra uma meditação concluída pelo usuário."""
+    conn = None
+    cursor = None
+    try:
+        conn = conectar()
+        if not conn:
+            raise Exception("Falha ao conectar ao banco de dados")
+
+        cursor = conn.cursor()
+        sql = """
+            INSERT INTO historico_meditacoes
+            (usuario_id, meditacao_id, duracao_real_minutos)
+            VALUES (%s, %s, %s)
+            RETURNING id, data_conclusao
+        """
+
+        cursor.execute(sql, (
+            historico.usuario_id,
+            historico.meditacao_id,
+            historico.duracao_real_minutos
+        ))
+
+        resultado = cursor.fetchone()
+        conn.commit()
+
+        print(f"✅ Meditação registrada no histórico para usuário {historico.usuario_id}")
+
+        # Retorna o ID e data de conclusão gerados
+        return {
+            'id': resultado[0],
+            'data_conclusao': resultado[1].isoformat() if resultado[1] else None
+        }
+
+    except Exception as error:
+        if conn:
+            conn.rollback()
+        print(f"❌ Erro ao registrar histórico de meditação: {error}")
+        raise
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+
+def listar_historico_meditacoes(usuario_id, limit=None):
+    """Lista o histórico de meditações de um usuário."""
+    conn = None
+    cursor = None
+    historico_lista = []
+    try:
+        conn = conectar()
+        if not conn:
+            raise Exception("Falha ao conectar ao banco de dados")
+
+        cursor = conn.cursor()
+
+        if limit:
+            sql = """
+                SELECT hm.id, hm.usuario_id, hm.meditacao_id, hm.data_conclusao,
+                       hm.duracao_real_minutos, m.titulo, m.descricao, m.duracao_minutos,
+                       m.categoria, m.tipo, m.imagem_capa
+                FROM historico_meditacoes hm
+                JOIN meditacoes m ON hm.meditacao_id = m.id
+                WHERE hm.usuario_id = %s
+                ORDER BY hm.data_conclusao DESC
+                LIMIT %s
+            """
+            cursor.execute(sql, (usuario_id, limit))
+        else:
+            sql = """
+                SELECT hm.id, hm.usuario_id, hm.meditacao_id, hm.data_conclusao,
+                       hm.duracao_real_minutos, m.titulo, m.descricao, m.duracao_minutos,
+                       m.categoria, m.tipo, m.imagem_capa
+                FROM historico_meditacoes hm
+                JOIN meditacoes m ON hm.meditacao_id = m.id
+                WHERE hm.usuario_id = %s
+                ORDER BY hm.data_conclusao DESC
+            """
+            cursor.execute(sql, (usuario_id,))
+
+        resultados = cursor.fetchall()
+
+        for linha in resultados:
+            historico_lista.append({
+                'id': linha[0],
+                'usuario_id': linha[1],
+                'meditacao_id': linha[2],
+                'data_conclusao': linha[3].isoformat() if linha[3] else None,
+                'duracao_real_minutos': linha[4],
+                'meditacao': {
+                    'titulo': linha[5],
+                    'descricao': linha[6],
+                    'duracao_minutos': linha[7],
+                    'categoria': linha[8],
+                    'tipo': linha[9],
+                    'imagem_capa': linha[10]
+                }
+            })
+
+        return historico_lista
+
+    except Exception as error:
+        print(f"❌ Erro ao listar histórico de meditações: {error}")
+        return None
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+
+def obter_estatisticas_meditacoes(usuario_id):
+    """Obtém estatísticas das meditações do usuário."""
+    conn = None
+    cursor = None
+    try:
+        conn = conectar()
+        if not conn:
+            raise Exception("Falha ao conectar ao banco de dados")
+
+        cursor = conn.cursor()
+
+        # Total de meditações concluídas
+        cursor.execute("""
+            SELECT COUNT(*) FROM historico_meditacoes WHERE usuario_id = %s
+        """, (usuario_id,))
+        total_meditacoes = cursor.fetchone()[0]
+
+        # Total de minutos meditados
+        cursor.execute("""
+            SELECT COALESCE(SUM(duracao_real_minutos), 0)
+            FROM historico_meditacoes
+            WHERE usuario_id = %s
+        """, (usuario_id,))
+        total_minutos = cursor.fetchone()[0]
+
+        # Categoria mais praticada
+        cursor.execute("""
+            SELECT m.categoria, COUNT(*) as total
+            FROM historico_meditacoes hm
+            JOIN meditacoes m ON hm.meditacao_id = m.id
+            WHERE hm.usuario_id = %s
+            GROUP BY m.categoria
+            ORDER BY total DESC
+            LIMIT 1
+        """, (usuario_id,))
+        categoria_result = cursor.fetchone()
+        categoria_favorita = categoria_result[0] if categoria_result else None
+
+        # Sequência atual (dias consecutivos)
+        cursor.execute("""
+            SELECT COUNT(DISTINCT DATE(data_conclusao))
+            FROM historico_meditacoes
+            WHERE usuario_id = %s
+            AND data_conclusao >= CURRENT_DATE - INTERVAL '7 days'
+        """, (usuario_id,))
+        dias_consecutivos = cursor.fetchone()[0]
+
+        # Última meditação
+        cursor.execute("""
+            SELECT MAX(data_conclusao)
+            FROM historico_meditacoes
+            WHERE usuario_id = %s
+        """, (usuario_id,))
+        ultima_meditacao = cursor.fetchone()[0]
+
+        return {
+            'total_meditacoes': total_meditacoes,
+            'total_minutos': int(total_minutos),
+            'categoria_favorita': categoria_favorita,
+            'dias_consecutivos_ultima_semana': dias_consecutivos,
+            'ultima_meditacao': ultima_meditacao.isoformat() if ultima_meditacao else None
+        }
+
+    except Exception as error:
+        print(f"❌ Erro ao obter estatísticas de meditações: {error}")
+        return None
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+
+def remover_historico_meditacao(historico_id, usuario_id):
+    """Remove um registro específico do histórico (apenas do próprio usuário)."""
+    conn = None
+    cursor = None
+    try:
+        conn = conectar()
+        if not conn:
+            raise Exception("Falha ao conectar ao banco de dados")
+
+        cursor = conn.cursor()
+
+        # Verifica se o histórico pertence ao usuário antes de deletar
+        sql = """
+            DELETE FROM historico_meditacoes
+            WHERE id = %s AND usuario_id = %s
+            RETURNING id
+        """
+        cursor.execute(sql, (historico_id, usuario_id))
+        resultado = cursor.fetchone()
+
+        if not resultado:
+            raise Exception("Histórico não encontrado ou não pertence ao usuário")
+
+        conn.commit()
+        print(f"✅ Histórico ID {historico_id} removido com sucesso")
+        return True
+
+    except Exception as error:
+        if conn:
+            conn.rollback()
+        print(f"❌ Erro ao remover histórico de meditação: {error}")
+        raise
     finally:
         if cursor:
             cursor.close()
