@@ -61,6 +61,30 @@ export default function EditProfileScreen() {
     setFormData({ ...formData, foto_perfil: base64Photo });
   };
 
+  // Formatar data para ISO (YYYY-MM-DD)
+  const formatarDataParaISO = (data: string): string | null => {
+    if (!data) return null;
+
+    // Remove caracteres não numéricos
+    const numeros = data.replace(/\D/g, '');
+
+    // Verifica se tem 8 dígitos (DDMMAAAA ou AAAAMMDD)
+    if (numeros.length !== 8) return data; // Retorna como está se não tiver 8 dígitos
+
+    // Tenta interpretar como DD/MM/AAAA (formato brasileiro)
+    const dia = parseInt(numeros.substring(0, 2));
+    const mes = parseInt(numeros.substring(2, 4));
+    const ano = parseInt(numeros.substring(4, 8));
+
+    // Valida se é uma data válida
+    if (dia >= 1 && dia <= 31 && mes >= 1 && mes <= 12 && ano >= 1900 && ano <= 2100) {
+      return `${ano}-${mes.toString().padStart(2, '0')}-${dia.toString().padStart(2, '0')}`;
+    }
+
+    // Se não for válido, retorna como está
+    return data;
+  };
+
   // Salvar perfil
   const handleSave = async () => {
     if (!authState.user?.id) {
@@ -68,13 +92,16 @@ export default function EditProfileScreen() {
       return;
     }
 
+    // Formatar data de nascimento
+    const dataFormatada = formatarDataParaISO(formData.data_nascimento);
+
     try {
       setLoading(true);
       const response = await api.put('/perfil', {
         id: authState.user.id,
         nome: formData.nome,
         cpf: formData.cpf,
-        data_nascimento: formData.data_nascimento,
+        data_nascimento: dataFormatada,
         tipo_sanguineo: formData.tipo_sanguineo,
         alergias: formData.alergias,
         foto_perfil: formData.foto_perfil,
@@ -138,10 +165,17 @@ export default function EditProfileScreen() {
         <TextInput
           style={styles.input}
           value={formData.data_nascimento}
-          onChangeText={(text) => setFormData({ ...formData, data_nascimento: text })}
-          placeholder="AAAA-MM-DD"
+          onChangeText={(text) => {
+            // Permite apenas números e traços/barras
+            const cleaned = text.replace(/[^0-9/-]/g, '');
+            setFormData({ ...formData, data_nascimento: cleaned });
+          }}
+          placeholder="DD/MM/AAAA ou AAAA-MM-DD"
+          keyboardType="numeric"
+          maxLength={10}
           editable={!loading}
         />
+        <Text style={styles.hint}>Ex: 29/05/1998 ou 1998-05-29</Text>
 
         <Text style={styles.label}>Tipo Sanguíneo</Text>
         <TextInput
@@ -211,6 +245,12 @@ const styles = StyleSheet.create({
     padding: 12,
     fontSize: 16,
     backgroundColor: '#f9f9f9',
+  },
+  hint: {
+    fontSize: 12,
+    color: '#999',
+    marginTop: 4,
+    fontStyle: 'italic',
   },
   textArea: {
     minHeight: 100,

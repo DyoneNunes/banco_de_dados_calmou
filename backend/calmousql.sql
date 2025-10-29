@@ -452,10 +452,11 @@ INSERT INTO public.classificacoes_humor VALUES (2, 2, 3, 'Feliz', 'Dia produtivo
 -- Data for Name: usuarios; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.usuarios VALUES (2, 'Teste Usuario', 'teste@email.com', '$2b$12$sT9I/WWp5qZ5udAvu/hccePptbI1MYD3Q8qj648i9zxjRy7xX3PzK', NULL, '2025-10-23 07:19:54.683785+00', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.usuarios VALUES (3, 'Usuário', 'calmou@calmou.app', '$2b$12$y/0CKM0uxRGpT7756MlXjORI7FD76dLHUZvPRk4InH0FQ/XHuDUh6', '{}', '2025-10-23 07:52:44.770624+00', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.usuarios VALUES (5, 'Dyone', 'dyone', '$2b$12$RpP73ADiAP0..VaK6L/tdudn7vDMRwBvMc9G0RKMCp7TkOH4yC3OO', NULL, '2025-10-23 08:03:50.164797+00', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.usuarios VALUES (6, 'Maria Souza', 'maria@test.com', '$2b$12$S784NU6Pdd.hy9t7Kdd2TO8xP9AE9VqTzm/Am5lrVyfN7XF37NL.i', NULL, '2025-10-23 08:37:16.156574+00', NULL, NULL, NULL, NULL, NULL, NULL);
+-- Corrigido: 11 campos (removido um NULL extra de cada linha)
+INSERT INTO public.usuarios VALUES (2, 'Teste Usuario', 'teste@email.com', '$2b$12$sT9I/WWp5qZ5udAvu/hccePptbI1MYD3Q8qj648i9zxjRy7xX3PzK', NULL, '2025-10-23 07:19:54.683785+00', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.usuarios VALUES (3, 'Usuário', 'calmou@calmou.app', '$2b$12$y/0CKM0uxRGpT7756MlXjORI7FD76dLHUZvPRk4InH0FQ/XHuDUh6', '{}', '2025-10-23 07:52:44.770624+00', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.usuarios VALUES (5, 'Dyone', 'dyone', '$2b$12$RpP73ADiAP0..VaK6L/tdudn7vDMRwBvMc9G0RKMCp7TkOH4yC3OO', NULL, '2025-10-23 08:03:50.164797+00', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.usuarios VALUES (6, 'Maria Souza', 'maria@test.com', '$2b$12$S784NU6Pdd.hy9t7Kdd2TO8xP9AE9VqTzm/Am5lrVyfN7XF37NL.i', NULL, '2025-10-23 08:37:16.156574+00', NULL, NULL, NULL, NULL, NULL);
 
 
 --

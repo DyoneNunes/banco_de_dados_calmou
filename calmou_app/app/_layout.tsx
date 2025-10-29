@@ -39,9 +39,16 @@ function InitialLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="(auth)" />
-        <Stack.Screen name="+not-found" />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(auth)/login" options={{ headerShown: false }} />
+        <Stack.Screen name="(auth)/signup" options={{ headerShown: false }} />
+        <Stack.Screen name="add-user" options={{ headerShown: false }} />
+        <Stack.Screen name="edit-user/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="edit-profile" options={{ headerShown: false }} />
+        <Stack.Screen name="registro-humor" options={{ headerShown: false }} />
+        <Stack.Screen name="meditacao/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="avaliacao/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="modal" options={{ headerShown: false, presentation: 'modal' }} />
       </Stack>
     </ThemeProvider>
   );

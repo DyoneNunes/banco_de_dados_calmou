@@ -66,10 +66,10 @@ const AVALIACOES = {
             return { score, texto };
         }
     },
-    ansiedade: { 
-        id: 'ansiedade', 
+    ansiedade: {
+        id: 'ansiedade',
         titulo: 'Escala de Ansiedade (GAD-7)',
-        tipoApi: 'Escala de Ansiedade',
+        tipoApi: 'ansiedade',
         cor: '#32CD32', 
         icone: 'help-buoy' as keyof typeof Ionicons.glyphMap,
         perguntas: [
@@ -120,19 +120,23 @@ export default function AvaliacaoScreen() {
         const payload = {
             usuario_id: authState.user?.id,
             tipo: avaliacao.tipoApi,
-            respostas: JSON.stringify(respostas),
+            respostas: respostas, // Schema espera Dict (objeto)
             resultado_score: score,
             resultado_texto: texto
         };
 
+        console.log('📊 [Avaliação] Enviando resultado:', payload);
+
         try {
-            await api.post('/avaliacoes', payload);
+            const response = await api.post('/avaliacoes', payload);
+            console.log('✅ [Avaliação] Salva com sucesso:', response.data);
             Alert.alert("Avaliação Concluída", `Seu resultado: ${texto} (Pontuação: ${score})`, [
                 { text: "OK", onPress: () => router.back() }
             ]);
-        } catch (error) {
-            console.error("Erro ao salvar avaliação:", error);
-            Alert.alert("Erro", "Não foi possível salvar sua avaliação.");
+        } catch (error: any) {
+            console.error("❌ [Avaliação] Erro ao salvar:", error.response?.data || error.message);
+            const mensagem = error.response?.data?.mensagem || "Não foi possível salvar sua avaliação.";
+            Alert.alert("Erro", mensagem);
         }
     };
 

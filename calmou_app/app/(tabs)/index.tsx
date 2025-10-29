@@ -59,9 +59,8 @@ export default function DashboardScreen() {
 
           // Buscar dados do gráfico apenas se houver usuário
           if (authState.user?.id) {
-            const graficoResponse = await api.get(
-              `/humor/relatorio-semanal/${authState.user.id}`
-            );
+            // O endpoint requer JWT e não precisa do ID na URL
+            const graficoResponse = await api.get('/humor/relatorio-semanal');
             
             if (isMounted) {
               if (graficoResponse.data && graficoResponse.data.length > 0) {

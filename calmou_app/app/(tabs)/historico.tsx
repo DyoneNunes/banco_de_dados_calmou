@@ -46,7 +46,8 @@ export default function HistoricoScreen() {
   const fetchHistorico = () => {
     if (authState.user?.id) {
       setLoading(true);
-      api.get(`/avaliacoes/historico/${authState.user.id}`)
+      // O endpoint requer JWT e não precisa do ID na URL
+      api.get('/avaliacoes/historico')
         .then(response => {
           setHistorico(response.data);
         })

@@ -1,4 +1,6 @@
 import bcrypt
+import psycopg2.extras
+from werkzeug.security import generate_password_hash, check_password_hash
 from conexao import conectar
 from model.usuario import Usuario
 from model.classificacao_humor import ClassificacaoHumor
@@ -9,14 +11,12 @@ from model.historico_meditacao import HistoricoMeditacao
 
 # --- FUNÇÕES DE HASH DE SENHA ---
 def generate_hash(password):
-    """Gera um hash seguro para a senha e retorna como string."""
-    salt = bcrypt.gensalt()
-    hashed_bytes = bcrypt.hashpw(password.encode('utf-8'), salt)
-    return hashed_bytes.decode('utf-8')
+    """Gera um hash seguro para a senha usando Werkzeug (scrypt)."""
+    return generate_password_hash(password)
 
 def verify_password(plain_password, stored_hash):
-    """Verifica se a senha plana corresponde ao hash armazenado."""
-    return bcrypt.checkpw(plain_password.encode('utf-8'), stored_hash.encode('utf-8'))
+    """Verifica se a senha plana corresponde ao hash armazenado (Werkzeug/scrypt)."""
+    return check_password_hash(stored_hash, plain_password)
 
 
 # --- FUNÇÕES DE USUÁRIO ---
@@ -710,10 +710,10 @@ def inserir_resultado_avaliacao(resultado):
         """
         
         cursor.execute(sql, (
-            resultado.usuario_id, 
-            resultado.tipo, 
-            resultado.respostas, 
-            resultado.resultado_score, 
+            resultado.usuario_id,
+            resultado.tipo,
+            psycopg2.extras.Json(resultado.respostas),  # Converte dict para JSONB
+            resultado.resultado_score,
             resultado.resultado_texto
         ))
         conn.commit()
