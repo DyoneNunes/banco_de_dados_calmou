@@ -1,60 +1,56 @@
+O *Calmou* é um aplicativo para *monitorar o estresse e prevenir burnout*, ajudando o usuário a acompanhar 
+seu humor diário, registrar emoções e acessar meditações guiadas.
+
+Projeto desenvolvido na disciplina *Projeto Integrador II, sob orientação do professor **Leonardo Pereira 
+Valadão Lopes, e na disciplina de **Banco de Dados, com o professor **Howard Cruz Roatti, no curso de 
+**Tecnologia em Análise e Desenvolvimento de Sistemas - FAESA*.
+
 Este README é para um projeto cujo foco principal é o banco de dados PostgreSQL.
 
 Markdown
+<img width="4002" height="1983" alt="diagrama_calmou" src="https://github.com/user-attachments/assets/95fd3d9e-d9f2-4e5d-a647-782b8a671177" />
+
 
 # Projeto de Banco de Dados com PostgreSQL
 
-## 📖 Descrição
+##  Descrição
 
-Este projeto é dedicado à criação, modelagem e manutenção de um banco de dados PostgreSQL. Ele serve como a fonte central de dados para [mencione o propósito, ex: "análises de dados", "serviços de BI", "um futuro sistema X", etc.]. A estrutura é gerenciada através de scripts SQL e o ambiente é containerizado com Docker para facilitar a replicação e o desenvolvimento.
+Este projeto é dedicado à criação, modelagem e manutenção de um banco de dados PostgreSQL. 
+Ele serve como a fonte central de dados para o aplicativo calmou. A estrutura é gerenciada 
+através de scripts SQL e o ambiente é containerizado com Docker para facilitar a replicação 
+e o desenvolvimento.
 
 ---
 
 ## 🛠️ Tecnologias Utilizadas
-
--   **PostgreSQL**: Sistema de Gerenciamento de Banco de Dados Relacional.
+-   **PostgreSQL**: Gerenciamento de Banco de Dados Relacional.
 -   **Docker**: Plataforma de containerização para criação do ambiente.
-
----
-
-## 🚀 Começando
-
-Siga as instruções abaixo para configurar e executar uma instância do banco de dados em seu ambiente local.
+-   **Python**: Linguagem de programaca para estrutura do backend.
+-   **React Native**: Para multiplataforma mobile IOS/ANDROID.
+-   **Typescript**: Framework de desenvolvimento mobile.
 
 ### ✅ Pré-requisitos
-
--   **Docker**: [Link para instalação do Docker](https://www.docker.com/products/docker-desktop/)
--   **Um cliente SQL** (Opcional, mas recomendado): DBeaver, pgAdmin, etc.
+-   ** Docker**: [Link para instalação do Docker](https://www.docker.com/products/docker-desktop/)
+-   ** Um cliente SQL** (Opcional, mas recomendado): DBeaver, pgAdmin, etc.
+-   ** Node **: Para execução do react native.
+-   ** Python**:  Para construcao do backend.
 
 ### 🔧 Instalação e Execução
-
 1.  **Clone o repositório:**
-    ```bash
-    git clone [https://github.com/seu-usuario/repositorio-postgres.git](https://github.com/seu-usuario/repositorio-postgres.git)
-    cd repositorio-postgres
+    ```bash ssh
+    git clone git@github.com:DyoneNunes/banco_de_dados_calmou.git
+    cd banco_de_dados_calmou
     ```
 
-2.  **Configure as Variáveis de Ambiente:**
-    Na raiz do projeto, crie um arquivo chamado `.env` e defina as credenciais para o banco de dados.
+2.  **Execucao do backend e frontend**
+    Na raiz de cada ambiente existe um readme com as instrucoes de cada ambiente.
+    Recomendações do Dyone: Executar cada ambiente em um vs code (ou ide de preferencia) para execução do projetos.
+    
 
-    **Arquivo `.env`:**
-    ```env
-    # Credenciais do Banco de Dados
-    POSTGRES_DB=nome_do_banco
-    POSTGRES_USER=seu_usuario
-    POSTGRES_PASSWORD=sua_senha_segura
-    ```
-
-3.  **Inicie o Contêiner:**
-    Execute o comando abaixo para iniciar o serviço do PostgreSQL.
-
-    ```bash
-    docker-compose up -d
-    ```
-    O banco de dados estará acessível em `localhost:5432`.
-
-4.  **Execute os Scripts SQL (se houver):**
-    Use seu cliente SQL preferido para se conectar ao banco de dados com as credenciais acima e execute os scripts localizados na pasta `/scripts` para criar a estrutura de tabelas, views, etc.
+5.  **Execute os Scripts SQL:**
+    Use seu cliente SQL preferido para se conectar ao banco de dados com as
+    credenciais username: "postgres", senha: "postgres", db: "meu_banco" e execute os scripts localizados
+    na pasta `/scripts` para criar a estrutura de tabelas, views, etc.
 
 ---
 
