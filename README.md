@@ -1,3 +1,5 @@
+# Projeto de Banco de Dados com PostgreSQL
+
 O *Calmou* é um aplicativo para *monitorar o estresse e prevenir burnout*, ajudando o usuário a acompanhar 
 seu humor diário, registrar emoções e acessar meditações guiadas.
 
@@ -9,9 +11,6 @@ Este README é para um projeto cujo foco principal é o banco de dados PostgreSQ
 
 Markdown
 <img width="4002" height="1983" alt="diagrama_calmou" src="https://github.com/user-attachments/assets/95fd3d9e-d9f2-4e5d-a647-782b8a671177" />
-
-
-# Projeto de Banco de Dados com PostgreSQL
 
 ##  Descrição
 
