@@ -22,20 +22,20 @@ e o desenvolvimento.
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+##  Tecnologias Utilizadas
 -   **PostgreSQL**: Gerenciamento de Banco de Dados Relacional.
 -   **Docker**: Plataforma de containerização para criação do ambiente.
 -   **Python**: Linguagem de programaca para estrutura do backend.
 -   **React Native**: Para multiplataforma mobile IOS/ANDROID.
 -   **Typescript**: Framework de desenvolvimento mobile.
 
-### ✅ Pré-requisitos
+###  Pré-requisitos
 -   ** Docker**: [Link para instalação do Docker](https://www.docker.com/products/docker-desktop/)
 -   ** Um cliente SQL** (Opcional, mas recomendado): DBeaver, pgAdmin, etc.
 -   ** Node **: Para execução do react native.
 -   ** Python**:  Para construcao do backend.
 
-### 🔧 Instalação e Execução
+###  Instalação e Execução
 1.  **Clone o repositório:**
     ```bash ssh
     git clone git@github.com:DyoneNunes/banco_de_dados_calmou.git
@@ -49,25 +49,12 @@ e o desenvolvimento.
 
 5.  **Execute os Scripts SQL:**
     Use seu cliente SQL preferido para se conectar ao banco de dados com as
-    credenciais username: "postgres", senha: "postgres", db: "meu_banco" e execute os scripts localizados
-    na pasta `/scripts` para criar a estrutura de tabelas, views, etc.
+    credenciais username: "postgres", senha: "postgres", db: "meu_banco" conectando
+    ao localhost na porta 5432.
 
 ---
 
-## 🗃️ Estrutura do Projeto
-
-.
-├── docker-compose.yml   # Arquivo de orquestração do Docker
-├── .env                 # Suas credenciais (não versionado)
-├── scripts/             # Pasta com os scripts SQL
-│   ├── 01_create_tables.sql
-│   └── 02_insert_initial_data.sql
-└── README.md
-
-
-Markdown
-
-## 🧑‍💻 Colaboradores
+##  Colaboradores
 
 -   **Derek Cobain**
 -   **Dyone Andrade**
