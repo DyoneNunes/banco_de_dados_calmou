@@ -4,8 +4,8 @@ O *Calmou* é um aplicativo para *monitorar o estresse e prevenir burnout*, ajud
 seu humor diário, registrar emoções e acessar meditações guiadas.
 
 Projeto desenvolvido na disciplina *Projeto Integrador II, sob orientação do professor **Leonardo Pereira 
-Valadão Lopes, e na disciplina de **Banco de Dados, com o professor **Howard Cruz Roatti, no curso de 
-**Tecnologia em Análise e Desenvolvimento de Sistemas - FAESA*.
+Valadão Lopes**, e na disciplina de **Banco de Dados**, com o professor **Howard Cruz Roatti**, no curso de 
+**Tecnologia em Análise e Desenvolvimento de Sistemas - FAESA**.
 
 Este README é para um projeto cujo foco principal é o banco de dados PostgreSQL.
 
