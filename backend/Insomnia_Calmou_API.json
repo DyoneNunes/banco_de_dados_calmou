@@ -1,0 +1,495 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2025-10-24T17:30:00.000Z",
+  "__export_source": "insomnia.desktop.app:v2023.5.8",
+  "resources": [
+    {
+      "_id": "req_health_check",
+      "parentId": "fld_public",
+      "modified": 1698163200000,
+      "created": 1698163200000,
+      "url": "{{ _.base_url }}/health",
+      "name": "Health Check",
+      "description": "Verifica se a API está online e funcionando",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1698163200000,
+      "isPrivate": false,
+      "_type": "request"
+    },
+    {
+      "_id": "req_api_info",
+      "parentId": "fld_public",
+      "modified": 1698163200000,
+      "created": 1698163200000,
+      "url": "{{ _.base_url }}/",
+      "name": "API Info",
+      "description": "Retorna informações sobre a API e endpoints disponíveis",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1698163100000,
+      "isPrivate": false,
+      "_type": "request"
+    },
+    {
+      "_id": "req_list_meditations",
+      "parentId": "fld_public",
+      "modified": 1698163200000,
+      "created": 1698163200000,
+      "url": "{{ _.base_url }}/meditacoes",
+      "name": "List Meditations",
+      "description": "Lista todas as meditações disponíveis (público)",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1698163000000,
+      "isPrivate": false,
+      "_type": "request"
+    },
+    {
+      "_id": "req_get_meditation",
+      "parentId": "fld_public",
+      "modified": 1698163200000,
+      "created": 1698163200000,
+      "url": "{{ _.base_url }}/meditacoes/1",
+      "name": "Get Meditation by ID",
+      "description": "Busca detalhes de uma meditação específica",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1698162900000,
+      "isPrivate": false,
+      "_type": "request"
+    },
+    {
+      "_id": "req_statistics",
+      "parentId": "fld_public",
+      "modified": 1698163200000,
+      "created": 1698163200000,
+      "url": "{{ _.base_url }}/stats",
+      "name": "Statistics",
+      "description": "Retorna estatísticas gerais do sistema",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1698162800000,
+      "isPrivate": false,
+      "_type": "request"
+    },
+    {
+      "_id": "req_register",
+      "parentId": "fld_auth",
+      "modified": 1698163200000,
+      "created": 1698163200000,
+      "url": "{{ _.base_url }}/register",
+      "name": "Register User",
+      "description": "Registra um novo usuário e retorna tokens JWT",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"João Silva\",\n  \"email\": \"joao.silva@email.com\",\n  \"password\": \"senha12345\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1698162700000,
+      "isPrivate": false,
+      "_type": "request"
+    },
+    {
+      "_id": "req_login",
+      "parentId": "fld_auth",
+      "modified": 1698163200000,
+      "created": 1698163200000,
+      "url": "{{ _.base_url }}/login",
+      "name": "Login",
+      "description": "Autentica usuário e retorna tokens JWT",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"joao.silva@email.com\",\n  \"password\": \"senha12345\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1698162600000,
+      "isPrivate": false,
+      "_type": "request"
+    },
+    {
+      "_id": "req_refresh",
+      "parentId": "fld_auth",
+      "modified": 1698163200000,
+      "created": 1698163200000,
+      "url": "{{ _.base_url }}/refresh",
+      "name": "Refresh Token",
+      "description": "Renova o access token usando o refresh token",
+      "method": "POST",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.refresh_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1698162500000,
+      "isPrivate": false,
+      "_type": "request"
+    },
+    {
+      "_id": "req_list_users",
+      "parentId": "fld_users",
+      "modified": 1698163200000,
+      "created": 1698163200000,
+      "url": "{{ _.base_url }}/usuarios",
+      "name": "List Users",
+      "description": "Lista todos os usuários (requer autenticação)",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.access_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1698162400000,
+      "isPrivate": false,
+      "_type": "request"
+    },
+    {
+      "_id": "req_get_user",
+      "parentId": "fld_users",
+      "modified": 1698163200000,
+      "created": 1698163200000,
+      "url": "{{ _.base_url }}/usuarios/{{ _.user_id }}",
+      "name": "Get User by ID",
+      "description": "Busca usuário por ID (só pode acessar seus próprios dados)",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.access_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1698162300000,
+      "isPrivate": false,
+      "_type": "request"
+    },
+    {
+      "_id": "req_update_user",
+      "parentId": "fld_users",
+      "modified": 1698163200000,
+      "created": 1698163200000,
+      "url": "{{ _.base_url }}/usuarios/{{ _.user_id }}",
+      "name": "Update User",
+      "description": "Atualiza dados do usuário (email, nome, senha)",
+      "method": "PUT",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"João Silva Santos\",\n  \"email\": \"joao.silva@email.com\",\n  \"password\": \"novaSenha123\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.access_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1698162200000,
+      "isPrivate": false,
+      "_type": "request"
+    },
+    {
+      "_id": "req_delete_user",
+      "parentId": "fld_users",
+      "modified": 1698163200000,
+      "created": 1698163200000,
+      "url": "{{ _.base_url }}/usuarios/{{ _.user_id }}",
+      "name": "Delete User",
+      "description": "Remove conta do usuário",
+      "method": "DELETE",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.access_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1698162100000,
+      "isPrivate": false,
+      "_type": "request"
+    },
+    {
+      "_id": "req_update_profile",
+      "parentId": "fld_users",
+      "modified": 1698163200000,
+      "created": 1698163200000,
+      "url": "{{ _.base_url }}/perfil",
+      "name": "Update Profile",
+      "description": "Atualiza dados do perfil (CPF, data nascimento, etc)",
+      "method": "PUT",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"id\": {{ _.user_id }},\n  \"nome\": \"João Silva Santos\",\n  \"cpf\": \"12345678900\",\n  \"data_nascimento\": \"1990-01-15\",\n  \"tipo_sanguineo\": \"O+\",\n  \"alergias\": \"Nenhuma\",\n  \"foto_perfil\": null\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.access_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1698162000000,
+      "isPrivate": false,
+      "_type": "request"
+    },
+    {
+      "_id": "req_register_mood",
+      "parentId": "fld_mood",
+      "modified": 1698163200000,
+      "created": 1698163200000,
+      "url": "{{ _.base_url }}/humor",
+      "name": "Register Mood",
+      "description": "Registra estado de humor do usuário",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"usuario_id\": {{ _.user_id }},\n  \"nivel_humor\": 8,\n  \"sentimento_principal\": \"Feliz\",\n  \"notas\": \"Dia muito produtivo!\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.access_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1698161900000,
+      "isPrivate": false,
+      "_type": "request"
+    },
+    {
+      "_id": "req_weekly_mood",
+      "parentId": "fld_mood",
+      "modified": 1698163200000,
+      "created": 1698163200000,
+      "url": "{{ _.base_url }}/humor/relatorio-semanal",
+      "name": "Weekly Mood Report",
+      "description": "Relatório de humor dos últimos 7 dias",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.access_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1698161800000,
+      "isPrivate": false,
+      "_type": "request"
+    },
+    {
+      "_id": "req_save_assessment",
+      "parentId": "fld_assessments",
+      "modified": 1698163200000,
+      "created": 1698163200000,
+      "url": "{{ _.base_url }}/avaliacoes",
+      "name": "Save Assessment",
+      "description": "Salva resultado de uma avaliação de saúde mental",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"usuario_id\": {{ _.user_id }},\n  \"tipo\": \"ansiedade\",\n  \"respostas\": {\n    \"pergunta1\": 2,\n    \"pergunta2\": 3,\n    \"pergunta3\": 1,\n    \"pergunta4\": 2\n  },\n  \"resultado_score\": 8,\n  \"resultado_texto\": \"Ansiedade Leve\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.access_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1698161700000,
+      "isPrivate": false,
+      "_type": "request"
+    },
+    {
+      "_id": "req_assessment_history",
+      "parentId": "fld_assessments",
+      "modified": 1698163200000,
+      "created": 1698163200000,
+      "url": "{{ _.base_url }}/avaliacoes/historico",
+      "name": "Assessment History",
+      "description": "Histórico de avaliações do usuário",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.access_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1698161600000,
+      "isPrivate": false,
+      "_type": "request"
+    },
+    {
+      "_id": "fld_public",
+      "parentId": "wrk_calmou",
+      "modified": 1698163200000,
+      "created": 1698163200000,
+      "name": "🌍 Public",
+      "description": "Endpoints públicos - não requerem autenticação",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1698163200000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "fld_auth",
+      "parentId": "wrk_calmou",
+      "modified": 1698163200000,
+      "created": 1698163200000,
+      "name": "🔐 Authentication",
+      "description": "Endpoints de autenticação e registro",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1698162000000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "fld_users",
+      "parentId": "wrk_calmou",
+      "modified": 1698163200000,
+      "created": 1698163200000,
+      "name": "👤 Users",
+      "description": "Endpoints de gerenciamento de usuários (protegido)",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1698161000000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "fld_mood",
+      "parentId": "wrk_calmou",
+      "modified": 1698163200000,
+      "created": 1698163200000,
+      "name": "😊 Mood",
+      "description": "Endpoints de registro e relatório de humor (protegido)",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1698160000000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "fld_assessments",
+      "parentId": "wrk_calmou",
+      "modified": 1698163200000,
+      "created": 1698163200000,
+      "name": "📊 Assessments",
+      "description": "Endpoints de avaliações de saúde mental (protegido)",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1698159000000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "wrk_calmou",
+      "parentId": null,
+      "modified": 1698163200000,
+      "created": 1698163200000,
+      "name": "Calmou API",
+      "description": "API REST para aplicativo de saúde mental e bem-estar\n\n**Base URL:** http://localhost:5001\n\n**Características:**\n- Autenticação JWT\n- Rate Limiting\n- Validação de dados\n- Logging estruturado\n\n**Como usar:**\n1. Execute Register ou Login\n2. Copie o access_token\n3. Salve no environment: access_token\n4. Use em endpoints protegidos\n\n**Documentação completa:** README.md",
+      "scope": "collection",
+      "_type": "workspace"
+    },
+    {
+      "_id": "env_base",
+      "parentId": "wrk_calmou",
+      "modified": 1698163200000,
+      "created": 1698163200000,
+      "name": "Base Environment",
+      "data": {
+        "base_url": "http://localhost:5001",
+        "access_token": "",
+        "refresh_token": "",
+        "user_id": ""
+      },
+      "dataPropertyOrder": {
+        "&": [
+          "base_url",
+          "access_token",
+          "refresh_token",
+          "user_id"
+        ]
+      },
+      "color": null,
+      "isPrivate": false,
+      "metaSortKey": 1698163200000,
+      "_type": "environment"
+    },
+    {
+      "_id": "jar_cookies",
+      "parentId": "wrk_calmou",
+      "modified": 1698163200000,
+      "created": 1698163200000,
+      "name": "Default Jar",
+      "cookies": [],
+      "_type": "cookie_jar"
+    }
+  ]
+}
