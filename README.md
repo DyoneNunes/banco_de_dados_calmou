@@ -51,9 +51,3 @@ e o desenvolvimento.
     credenciais username: "postgres", senha: "postgres", db: "meu_banco" conectando
     ao localhost na porta 5432.
 
----
-
-##  Colaboradores
-
--   **Derek Cobain**
--   **Dyone Andrade**
